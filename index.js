@@ -19,13 +19,14 @@ async function run() {
     try {
         await client.connect();
         const inventoryCollection = client.db('theFruits').collection('fruits');
-
+        // get inventory
         app.get('/inventory', async (req, res) => {
             const query = {}
             const cursor = inventoryCollection.find(query);
             const inventories = await cursor.toArray();
             res.send(inventories)
         });
+            // single items details
         app.get('/inventory/:id', async (req, res) => {
             const id = req.params.id;
 
@@ -33,6 +34,13 @@ async function run() {
             const inventory = await inventoryCollection.findOne(query);
             res.send(inventory);
 
+        })
+
+        // post one inventory item
+        app.post('/inventory',async(req,res)=>{
+            const newInventory = req.body;
+            const result = await inventoryCollection.insertOne(newInventory);
+            res.send(result);
         })
     }
     finally {
