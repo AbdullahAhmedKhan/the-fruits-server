@@ -59,7 +59,9 @@ async function run() {
             const inventory = await inventoryCollection.updateOne(query, {
                 $inc: { quantity: -1 }
             })
+            res.send(inventory)
         })
+        
         //restock
         app.put('/inventory/increase/:id', async (req, res) => {
             const id = req.params.id;
@@ -67,6 +69,10 @@ async function run() {
             const quantity = parseInt(req.body.quantity);
             const inventory = await inventoryCollection.findOne(query);
             const newQuantity = quantity + inventory.quantity;
+            const updateQuantity = await inventoryCollection.updateOne(query, {
+                $set: { quantity: newQuantity }
+            })
+            res.send(updateQuantity);
         })
 
 
