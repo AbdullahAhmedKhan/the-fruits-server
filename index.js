@@ -26,7 +26,7 @@ async function run() {
             const inventories = await cursor.toArray();
             res.send(inventories)
         });
-            // single items details
+        // single items details
         app.get('/inventory/:id', async (req, res) => {
             const id = req.params.id;
 
@@ -37,11 +37,39 @@ async function run() {
         })
 
         // post one inventory item
-        app.post('/inventory',async(req,res)=>{
+        app.post('/inventory', async (req, res) => {
             const newInventory = req.body;
             const result = await inventoryCollection.insertOne(newInventory);
             res.send(result);
         })
+
+        // delete inventory
+        app.delete('/inventory/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await inventoryCollection.deleteOne(query);
+            res.send(result);
+
+        })
+
+        //delivery
+        app.put('/inventory/decrease/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const inventory = await inventoryCollection.updateOne(query, {
+                $inc: { quantity: -1 }
+            })
+        })
+        //restock
+        app.put('/inventory/increase/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const quantity = parseInt(req.body.quantity);
+            const inventory = await inventoryCollection.findOne(query);
+            const newQuantity = quantity + inventory.quantity;
+        })
+
+
     }
     finally {
 
