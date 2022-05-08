@@ -48,8 +48,7 @@ async function run() {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await inventoryCollection.deleteOne(query);
-            res.send(result);
-
+            res.send(result)
         })
 
         //delivery
@@ -61,7 +60,7 @@ async function run() {
             })
             res.send(inventory)
         })
-        
+
         //restock
         app.put('/inventory/increase/:id', async (req, res) => {
             const id = req.params.id;
@@ -74,6 +73,14 @@ async function run() {
             })
             res.send(updateQuantity);
         })
+        //My Item
+        app.get('/myInventory', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email }
+            const cursor = inventoryCollection.find(query);
+            const items = await cursor.toArray();
+            res.send(items)
+        })
 
 
     }
@@ -82,15 +89,6 @@ async function run() {
     }
 }
 run().catch(console.dir);
-
-
-
-
-
-
-
-
-
 
 app.get('/', (req, res) => {
     res.send('Running The Fruits Server');
