@@ -10,8 +10,6 @@ app.use(cors());
 app.use(express.json());
 
 
-
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.q40ku.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -19,17 +17,16 @@ async function run() {
     try {
         await client.connect();
         const inventoryCollection = client.db('theFruits').collection('fruits');
-        // get inventory
+        // get inventories
         app.get('/inventory', async (req, res) => {
             const query = {}
             const cursor = inventoryCollection.find(query);
             const inventories = await cursor.toArray();
             res.send(inventories)
         });
-        // single items details
+        // single product details
         app.get('/inventory/:id', async (req, res) => {
             const id = req.params.id;
-
             const query = { _id: ObjectId(id) };
             const inventory = await inventoryCollection.findOne(query);
             res.send(inventory);
@@ -61,7 +58,7 @@ async function run() {
             res.send(inventory)
         })
 
-        //restock
+        //re-stock
         app.put('/inventory/increase/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -82,7 +79,7 @@ async function run() {
             res.send(items)
         })
 
-        //for jwt
+        // JWT token
         app.post('/login', async (req, res) => {
             const user = req.body;
             const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
